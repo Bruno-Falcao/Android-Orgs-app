@@ -35,7 +35,7 @@
         </Button>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/formulario_imagem_textinputlayout_url"
+            android:id="@+id/formulario_imagem_text_url"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
