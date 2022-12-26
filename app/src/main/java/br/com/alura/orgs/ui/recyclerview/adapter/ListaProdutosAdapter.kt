@@ -11,9 +11,6 @@ import br.com.alura.orgs.extensions.formataParaMoedaBrasileira
 import br.com.alura.orgs.extensions.tentaCarregarImagem
 import br.com.alura.orgs.model.Produto
 import br.com.alura.orgs.ui.activity.ProductDetailActivity
-import java.math.BigDecimal
-import java.text.NumberFormat
-import java.util.Locale
 
 class ListaProdutosAdapter(
     private val context: Context,
@@ -33,12 +30,6 @@ class ListaProdutosAdapter(
                 if (::produto.isInitialized) {
                     itemClickAction(produto)
                 }
-            }
-        }
-
-        fun clickProductDescription() {
-            binding.productItemCard.setOnClickListener {
-
             }
         }
 
@@ -82,15 +73,6 @@ class ListaProdutosAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val produto = produtos[position]
         holder.vincula(produto)
-
-        val intent = Intent(context, ProductDetailActivity::class.java)
-        ProdutoItemBinding.inflate(LayoutInflater.from(context)).apply {
-            productItemCard.setOnClickListener {
-                context.startActivity(intent)
-            }
-        }
-
-
     }
 
     override fun getItemCount(): Int = produtos.size
