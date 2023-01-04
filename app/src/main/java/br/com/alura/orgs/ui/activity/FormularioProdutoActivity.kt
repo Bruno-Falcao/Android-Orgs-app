@@ -1,23 +1,25 @@
 package br.com.alura.orgs.ui.activity
 
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import br.com.alura.orgs.dao.ProdutosDao
+import br.com.alura.orgs.database.AppDatabase
 import br.com.alura.orgs.databinding.ActivityFormularioProdutoBinding
-import br.com.alura.orgs.databinding.FormularioImagemBinding
-import br.com.alura.orgs.ui.dialog.FormularioImagemDialog
 import br.com.alura.orgs.extensions.tentaCarregarImagem
 import br.com.alura.orgs.model.Produto
-import coil.load
+import br.com.alura.orgs.ui.dialog.FormularioImagemDialog
 import java.math.BigDecimal
 
 class FormularioProdutoActivity : AppCompatActivity() {
 
+    private var produtoId = 0L
     private val binding by lazy {
         ActivityFormularioProdutoBinding.inflate(layoutInflater)
     }
     private var url: String? = null
+
+    private val produtoDao by lazy {
+        AppDatabase.getInstance(this).produtoDao()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,14 +34,35 @@ class FormularioProdutoActivity : AppCompatActivity() {
                 binding.formularioProdutoImagem.tentaCarregarImagem(url)
             }
         }
+        intent.getLongExtra(CHAVE_PRODUTO_ID, 0L)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        tentaBuscarProduto()
+    }
+
+    private fun tentaBuscarProduto() {
+        produtoDao.findById(produtoId)?.let {
+            title = "Alterar produto"
+            preencheCampos(it)
+        }
+    }
+
+    private fun preencheCampos(produtoCarregado: Produto) {
+        url = produtoCarregado.imagem
+        binding.formularioProdutoImagem.tentaCarregarImagem(produtoCarregado.imagem)
+        binding.activityFormularioProdutoNome.setText(produtoCarregado.nome)
+        binding.activityFormularioProdutoDescricao.setText(produtoCarregado.descricao)
+        binding.activityFormularioProdutoValor.setText(produtoCarregado.valor.toPlainString())
     }
 
     private fun configuraBotaoSalvar() {
         val botaoSalvar = binding.activityFormularioProdutoBotaoSalvar
-        val dao = ProdutosDao()
+
         botaoSalvar.setOnClickListener {
             val produtoNovo = criaProduto()
-            dao.adiciona(produtoNovo)
+            produtoDao.save(produtoNovo)
             finish()
         }
     }
@@ -61,6 +84,7 @@ class FormularioProdutoActivity : AppCompatActivity() {
         }
 
         return Produto(
+            id = produtoId,
             nome = nome,
             descricao = descricao,
             valor = valor,
